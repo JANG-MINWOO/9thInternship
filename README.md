@@ -135,7 +135,7 @@ EC2 인스턴스에 애플리케이션을 배포하고, 어플리케이션 심�
 
 테스트를 다음 주소를 열어 요청을 보낼 수 있습니다.
 
-https://www.postman.com/team62-4880/workspace/minwoo-workspace/collection/38576841-933678bc-8d75-4c59-b308-5e9dcf3d186a?action=share&creator=38576841
+https://documenter.getpostman.com/view/38576841/2sAYQanBmX
 
 배포용 회원가입과 로그인을 통해 테스트 가능합니다.
 
