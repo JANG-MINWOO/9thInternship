@@ -66,8 +66,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-		AuthenticationException failed) {
+		AuthenticationException failed) throws IOException {
 		log.info("로그인 실패");
 		response.setStatus(401);
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+		String errorMessage = "로그인에 실패했습니다. 사용자 이름 또는 비밀번호를 확인해주세요.";
+		response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of("error", errorMessage)));
 	}
 }
