@@ -38,6 +38,7 @@ public class WebSecurityConfig {
 	public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
 		JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
 		filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+		filter.setFilterProcessesUrl("/sign");
 		return filter;
 	}
 
@@ -53,7 +54,7 @@ public class WebSecurityConfig {
 		http.authorizeHttpRequests((authorizeHttpRequests) ->
 			authorizeHttpRequests
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-				.requestMatchers("/signup/**").permitAll() // 회원가입은 요청 허가
+				.requestMatchers("/signup/**", "/sign").permitAll() // 회원가입은 요청 허가
 				.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		);
 
