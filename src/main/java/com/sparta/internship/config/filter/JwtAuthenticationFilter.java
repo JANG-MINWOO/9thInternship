@@ -1,7 +1,10 @@
 package com.sparta.internship.config.filter;
 
 import java.io.IOException;
+import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -14,7 +17,6 @@ import com.sparta.internship.domain.user.dto.request.SigninRequest;
 import com.sparta.internship.domain.user.entity.UserRole;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +52,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-		Authentication authResult) {
+		Authentication authResult) throws IOException {
 		log.info("로그인 성공 및 JWT 생성");
 		UserRole role = ((UserDetailsImpl)authResult.getPrincipal()).getUser().getUserRole();
 
@@ -58,6 +60,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			((UserDetailsImpl)authResult.getPrincipal()).getUser().getId(),
 			((UserDetailsImpl)authResult.getPrincipal()).getUser().getUsername(),
 			role);
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of("token", token)));
 		jwtUtil.addJwtToCookie(token, response);
 	}
 

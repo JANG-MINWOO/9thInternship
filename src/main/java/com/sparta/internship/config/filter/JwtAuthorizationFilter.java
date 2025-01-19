@@ -49,10 +49,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 			}
 
 			Claims info = jwtUtil.extractClaims(tokenValue);
-			String email = info.get("email", String.class);
+			String username = info.get("username", String.class);
 
 			try {
-				setAuthentication(email);
+				setAuthentication(username);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 				return;
