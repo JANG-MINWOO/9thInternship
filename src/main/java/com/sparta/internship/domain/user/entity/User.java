@@ -30,4 +30,15 @@ public class User {
 
 	@Enumerated(EnumType.STRING)
 	private UserRole userRole;
+
+	private User(String username, String password, String nickname, UserRole userRole) {
+		this.username = username;
+		this.password = password;
+		this.nickname = nickname;
+		this.userRole = userRole;
+	}
+
+	public static User createOf(String username, String password, String nickname, UserRole userRole) {
+		return new User(username, password, nickname, userRole);
+	}
 }
