@@ -25,6 +25,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "JwtUtil")
@@ -35,6 +36,7 @@ public class JwtUtil {
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final long TOKEN_TIME = 60000 * 60 * 1000L; // 60분
 	private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+	@Setter
 	@Value("${jwt.secret.key}")
 	private String secretKey;
 	private Key key;
