@@ -53,15 +53,22 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authResult) throws IOException {
 		log.info("로그인 성공 및 JWT 생성");
+
+		UserDetailsImpl userDetails = (UserDetailsImpl)authResult.getPrincipal();
 		UserRole role = ((UserDetailsImpl)authResult.getPrincipal()).getUser().getUserRole();
 
-		String token = jwtUtil.createToken(
-			((UserDetailsImpl)authResult.getPrincipal()).getUser().getId(),
-			((UserDetailsImpl)authResult.getPrincipal()).getUser().getUsername(),
-			role);
+		String accessToken = jwtUtil.createAccessToken(userDetails.getUser().getId(), userDetails.getUsername(), role);
+		String refreshToken = jwtUtil.createRefreshToken(userDetails.getUser().getId(), userDetails.getUsername());
+
+		// Access Token 은 Authorization 헤더로 반환하도록 설정
+		response.setHeader("Authorization", accessToken);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of("token", token)));
-		jwtUtil.addJwtToCookie(token, response);
+		response.getWriter().write(new ObjectMapper().writeValueAsString(
+			Map.of("accessToken", accessToken, "refreshToken", refreshToken)
+		));
+
+		// Refresh Token 은 HTTP-Only 쿠키에 저장해서 보안 강화
+		jwtUtil.addRefreshTokenToCookie(refreshToken, response);
 	}
 
 	@Override

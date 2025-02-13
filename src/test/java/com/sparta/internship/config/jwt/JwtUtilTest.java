@@ -31,7 +31,7 @@ class JwtUtilTest {
 		UserRole userRole = UserRole.USER;
 
 		// When
-		String token = jwtUtil.createToken(id, username, userRole);
+		String token = jwtUtil.createAccessToken(id, username, userRole);
 
 		// Then
 		assertThat(token).isNotNull();
@@ -45,7 +45,7 @@ class JwtUtilTest {
 		Long id = 1L;
 		String username = "testuser";
 		UserRole userRole = UserRole.USER;
-		String token = jwtUtil.createToken(id, username, userRole);
+		String token = jwtUtil.createAccessToken(id, username, userRole);
 		String substringToken = jwtUtil.substringToken(token);
 
 		// When
@@ -64,7 +64,7 @@ class JwtUtilTest {
 		Long id = 1L;
 		String username = "testuser";
 		UserRole userRole = UserRole.USER;
-		String token = jwtUtil.createToken(id, username, userRole);
+		String token = jwtUtil.createAccessToken(id, username, userRole);
 		String substringToken = jwtUtil.substringToken(token);
 
 		// When
@@ -83,7 +83,7 @@ class JwtUtilTest {
 		UserRole userRole = UserRole.USER;
 
 		// When
-		String token = jwtUtil.createToken(id, username, userRole);
+		String token = jwtUtil.createAccessToken(id, username, userRole);
 		String strippedToken = jwtUtil.substringToken(token);
 
 		// Then
