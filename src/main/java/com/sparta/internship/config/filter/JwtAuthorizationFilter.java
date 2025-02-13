@@ -36,12 +36,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		ServletException,
 		IOException {
 
-		String tokenValue = jwtUtil.getTokenFromRequest(req);
+		String tokenValue = jwtUtil.getTokenFromHeader(req);
 
 		if (StringUtils.hasText(tokenValue)) {
-			// JWT 토큰 substring
-			tokenValue = jwtUtil.substringToken(tokenValue);
-			log.info(tokenValue);
+			log.info("Authorization 헤더에서 Access Token 확인: {}", tokenValue);
 
 			if (!jwtUtil.validateToken(tokenValue)) {
 				log.error("Token Error");

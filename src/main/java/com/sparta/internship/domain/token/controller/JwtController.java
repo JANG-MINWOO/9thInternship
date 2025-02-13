@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,5 +32,11 @@ public class JwtController {
 			return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
 		}
 
+	}
+
+	@PostMapping("/refresh")
+	public ResponseEntity<Map<String, String>> refreshToken(HttpServletRequest request) {
+		log.info("Refresh Token 을 사용하여 새로운 Access Token 발급 요청");
+		return ResponseEntity.ok(jwtService.refreshAccessToken(request));
 	}
 }
