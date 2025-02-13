@@ -126,4 +126,8 @@ public class JwtUtil {
 		}
 		return false;
 	}
+
+	public Key getSigningKey() {
+		return this.key;
+	}
 }
