@@ -11,6 +11,7 @@ import com.sparta.internship.config.jwt.JwtUtil;
 import com.sparta.internship.domain.user.entity.UserRole;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,10 +60,16 @@ public class JwtService {
 
 		// Refresh Token 유효성 검사
 		String strippedToken = jwtUtil.substringToken(refreshToken);
-		if (!jwtUtil.validateRefreshToken(strippedToken)) {
-			log.warn("유효하지 않은 Refresh Token");
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh Token");
+		try {
+			if (!jwtUtil.validateRefreshToken(strippedToken)) {
+				log.warn("유효하지 않은 Refresh Token");
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh Token");
+			}
+		} catch (ExpiredJwtException e) {
+			log.warn("만료된 Refresh Token");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "만료된 Refresh Token, 다시 로그인하세요.");
 		}
+
 
 		// Refresh Token 이 유효하면 새로운 Access Token 발급
 		Claims claims = jwtUtil.extractClaims(strippedToken);
