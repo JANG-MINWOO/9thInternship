@@ -36,8 +36,9 @@ public class UserControllerTest2 {
 		mockMvc.perform(post("/sign")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(signinRequest)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.token").isNotEmpty());
+			.andExpect(status().isOk()) // HTTP 200 OK 응답 확인
+			.andExpect(header().exists("Authorization")) // 헤더에 Access Token 존재 확인
+			.andExpect(cookie().exists("Refresh-Token")); // HTTP-Only 쿠키에 Refresh Token 존재 확인
 	}
 
 	@Test
