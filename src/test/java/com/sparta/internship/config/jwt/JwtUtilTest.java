@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.sparta.internship.domain.user.entity.UserRole;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 
 @SpringBootTest
@@ -75,7 +76,7 @@ class JwtUtilTest {
 	}
 
 	@Test
-	@DisplayName("JWT 서명 검증 테스트")
+	@DisplayName("JWT 토큰 - 서명 검증 테스트")
 	void testJwtSignatureValidation() {
 		// Given
 		Long id = 1L;
@@ -99,5 +100,80 @@ class JwtUtilTest {
 			log.error("JWT 서명 검증 실패: {}", e.getMessage());
 			fail("JWT 서명 검증 실패");
 		}
+	}
+
+	@Test
+	@DisplayName("Refresh Token - 생성 테스트")
+	void testCreateRefreshToken() {
+		// Given
+		Long id = 1L;
+		String username = "testuser";
+
+		// When
+		String refreshToken = jwtUtil.createRefreshToken(id, username);
+
+		// Then
+		assertThat(refreshToken).isNotNull();
+		log.info("Refresh Token 발급 성공: {}", refreshToken);
+	}
+
+	@Test
+	@DisplayName("Refresh Token - 검증 테스트")
+	void testValidateRefreshToken() {
+		// Given
+		Long id = 1L;
+		String username = "testuser";
+		String refreshToken = jwtUtil.createRefreshToken(id, username);
+		String strippedToken = jwtUtil.substringToken(refreshToken);
+
+		// When
+		boolean isValid = jwtUtil.validateRefreshToken(strippedToken);
+
+		// Then
+		assertThat(isValid).isTrue();
+		log.info("Refresh Token 검증 성공");
+	}
+
+	@Test
+	@DisplayName("Refresh Token - Access Token 만료 후 R/T 검증 테스트")
+	void testAccessTokenExpiredAndRefreshTokenValid() throws InterruptedException {
+		// Given
+		Long id = 1L;
+		String username = "testuser";
+		String accessToken = jwtUtil.createShortLivedAccessToken(id, username, UserRole.USER);
+		String refreshToken = jwtUtil.createRefreshToken(id, username);
+
+		Thread.sleep(3000);
+
+		boolean isAccessTokenValid;
+		boolean isRefreshTokenValid;
+
+		try {
+			isAccessTokenValid = jwtUtil.validateToken(jwtUtil.substringToken(accessToken));
+		} catch (ExpiredJwtException e) {
+			isAccessTokenValid = false;
+			log.info("Access Token 이 만료됨");
+		}
+
+		isRefreshTokenValid = jwtUtil.validateRefreshToken(jwtUtil.substringToken(refreshToken));
+
+		// Then
+		assertThat(isAccessTokenValid).isFalse();
+		assertThat(isRefreshTokenValid).isTrue();
+		log.info("Access Token 만료 후 Refresh Token 검증 성공");
+	}
+
+	@Test
+	@DisplayName("Refresh Token - 잘못된 토큰이므로 검증 실패")
+	void testInvalidRefreshToken() {
+		// Given
+		String invalidToken = "invalidToken";
+
+		// When
+		boolean isValid = jwtUtil.validateRefreshToken(invalidToken);
+
+		// Then
+		assertThat(isValid).isFalse();
+		log.info("잘못된 Refresh Token 검증 실패");
 	}
 }
