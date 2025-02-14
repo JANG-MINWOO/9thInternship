@@ -63,6 +63,22 @@ public class JwtUtil {
 				.compact();
 	}
 
+	// 테스트를 위한 짧은 유효시간을 가진 AccessToken
+	public String createShortLivedAccessToken(Long userId, String username, UserRole userRole) {
+		Date date = new Date();
+		long shortExpirationTime = 2000; // 2초 만료 설정 (테스트 위해)
+
+		return BEARER_PREFIX +
+			Jwts.builder()
+				.setSubject(String.valueOf(userId))
+				.claim("username", username)
+				.claim("userRole", userRole)
+				.setExpiration(new Date(date.getTime() + shortExpirationTime)) // 짧은 만료시간 설정
+				.setIssuedAt(date)
+				.signWith(key, signatureAlgorithm)
+				.compact();
+	}
+
 	// Refresh Token 생성로직
 	public String createRefreshToken(Long userId, String username) {
 		Date date = new Date();
