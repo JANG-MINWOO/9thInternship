@@ -18,18 +18,15 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "JWT 검증 및 인가")
+@RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
 	private final UserDetailsServiceImpl userDetailsService;
-
-	public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
-		this.jwtUtil = jwtUtil;
-		this.userDetailsService = userDetailsService;
-	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws
@@ -42,7 +39,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 			log.info("Authorization 헤더에서 Access Token 확인: {}", tokenValue);
 
 			if (!jwtUtil.validateToken(tokenValue)) {
-				log.error("Token Error");
+				log.error("유효하지 않은 Access Token 입니다.");
+				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				res.setContentType("application/json");
+				res.getWriter().write("{\"error\": \"Invalid Access Token\"}");
 				return;
 			}
 
