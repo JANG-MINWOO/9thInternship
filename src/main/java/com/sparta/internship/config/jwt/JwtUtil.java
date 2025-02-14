@@ -117,6 +117,7 @@ public class JwtUtil {
 			cookie.setPath("/");
 			cookie.setHttpOnly(true); // XSS 공격 방지를 위해 HTTP-Only 설정
 			cookie.setSecure(true); // HTTPS 환경에서만 사용 가능하도록 설정 (운영 환경에서 필수)
+			cookie.setAttribute("SameSite", "Strict"); // CSRF 공격 방지를 위해
 
 			res.addCookie(cookie);
 		} catch (UnsupportedEncodingException e) {
