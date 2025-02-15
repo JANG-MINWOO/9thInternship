@@ -15,12 +15,14 @@ import com.sparta.internship.config.security.UserDetailsImpl;
 import com.sparta.internship.domain.user.dto.request.SigninRequest;
 import com.sparta.internship.domain.user.entity.UserRole;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
+@Tag(name = "인증", description = "JWT 기반 로그인 API")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final JwtUtil jwtUtil;
 
@@ -62,6 +64,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 		// Access Token 은 Authorization 헤더로 반환하도록 설정
 		response.setHeader("Authorization", accessToken);
+		response.setHeader("Access-Control-Expose-Headers", "Authorization");
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.getWriter().write(new ObjectMapper().writeValueAsString(
 			Map.of("accessToken", accessToken, "refreshToken", refreshToken)

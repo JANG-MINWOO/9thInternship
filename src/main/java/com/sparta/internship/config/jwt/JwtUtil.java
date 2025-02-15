@@ -34,7 +34,7 @@ public class JwtUtil {
 
 	private static final String AUTHORIZATION_HEADER = "Authorization";
 	private static final String BEARER_PREFIX = "Bearer ";
-	private static final long ACCESS_TOKEN_TIME = 60000 * 60 * 1000L; // 60분
+	private static final long ACCESS_TOKEN_TIME = 60 * 1000L; // 60분
 	private static final long REFRESH_TOKEN_TIME = 60000 * 60 * 24 * 7L;
 	private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 	@Setter
@@ -117,7 +117,7 @@ public class JwtUtil {
 			cookie.setPath("/");
 			cookie.setHttpOnly(true); // XSS 공격 방지를 위해 HTTP-Only 설정
 			cookie.setSecure(true); // HTTPS 환경에서만 사용 가능하도록 설정 (운영 환경에서 필수)
-			cookie.setAttribute("SameSite", "Strict"); // CSRF 공격 방지를 위해
+			cookie.setAttribute("SameSite", "Lax"); // CSRF 공격 방지를 위해 Strict or Swagger 에서 Lax
 
 			res.addCookie(cookie);
 		} catch (UnsupportedEncodingException e) {
