@@ -21,7 +21,7 @@ Spring Boot 기반의 **JWT 인증 및 인가 시스템을 포함한 백엔드 �
 
 ### 1️⃣ **JWT 기반 인증 & 인가**
 
-- Access Token: 60분 유효기간, `Authorization` 헤더에 저장
+- Access Token: 60분 유효기간, `Authorization` 헤더에 저장 -> 테스트를 위해 배포 환경에선 **유효기간 1분**으로 설정
 - Refresh Token: 7일 유효기간, `HttpOnly` 쿠키에 저장
 - Access Token 만료 시, Refresh Token으로 재발급 API 제공
 
@@ -108,21 +108,46 @@ Spring Boot 기반의 **JWT 인증 및 인가 시스템을 포함한 백엔드 �
 
 ## 🚀 실행 방법
 
-### 1️⃣ **애플리케이션 실행**
+### 1️⃣ **Swagger API 문서 확인**
+- `http://localhost:8080/swagger-ui/index.html` **로컬환경**
+- 
+<br>
 
-```bash
-./gradlew bootRun
-```
+### 2️⃣ **회원가입 기능 예시**
+![Image](https://github.com/user-attachments/assets/bd650708-c72c-4c9e-a9d5-453440780929)
+- 회원가입 기능은 위 사진과 마찬가지로 원하는 이름, 비밀번호, 닉네임을 설정하여 입력하면 됩니다.
+- 가입기능은 정상적으로 동작하지만, 편의를 위해 DB에 테스트용 ID 를 미리 생성해 두겠습니다.
+- 회원가입 시, 기본적으로 **일반유저 권한**으로 가입이 진행됩니다.
+- - ID : Admin (관리자 권한) (**현재 토큰관련 API 와 Health-Check API 를 관리자만 사용할 수 있도록 Interceptor 를 설정해두었습니다.**)
+  - P/W : 12341234
+  - ID : User (일반 유저 권한)
+  - P/W : 12341234
 
-### 2️⃣ **Swagger API 문서 확인**
+### 3️⃣ **로그인 기능**
+![Image](https://github.com/user-attachments/assets/7c8570e6-8220-452e-a043-42f3e9b4ea77)
+- 로그인 시, 처음에는 전체 API의 원활한 테스트를 위해 `Admin/12341234`계정으로 입력 부탁드립니다.
+<br>
 
-- `http://localhost:8080/swagger-ui/index.html`
+![Image](https://github.com/user-attachments/assets/9bda343e-eac3-44a2-9562-665dfeb3adcf)
+- 로그인 성공 시, `Access Token` 과 `Refresh Token` 이 반환됩니다.
+- *중요* : *Access Token 의 "Bearer " 를 제외한 `eyJhbGciOiJIUzI1NiJ9...` 부분을 복사하여, Swagger 최상단 Authorize 버튼을 누르고 입력해주셔야 API 에 접근가능합니다.*
+- *중요2* : *Test 를 위해 임의로 Access Token 의 **만료 시간을 1분으로** 설정하였습니다. 아래의 기능을 수행하는데는 충분한 시간입니다.*
+<br>
 
-### 3️⃣ **테스트 실행**
+### 4️⃣ **Access Token 디코딩 & Health Check API**
+![Image](https://github.com/user-attachments/assets/6e062ef2-91f6-411a-8706-6fcfda3b8085)
+- 위 사진의 두 기능은 별다른 입력값이 없습니다. `Try it out` 버튼을 클릭한 뒤 요청을 보내시면 확인할 수 있습니다.
+<br>
 
-```bash
-./gradlew test
-```
+### 5️⃣ **Access Token 만료 후 Refresh Token 으로 재발급**
+- 1분이 지나게 되면 Access Token 이 만료되므로, `Authorize` 에 등록해놓은 토큰값으로는 API 를 정상적으로 실행할 수 없습니다.
+- 상단의 사용자 로그인시 같이 반환 받은 `refreshToken: "Bearer eyJhbGciOiJIUzI1NiJ9..."` 부분을 확인합니다.
+- 프로젝트의 비즈니스 로직에 따라, `Refresh Token` 은 쿠키에 `Refresh-Token` 이라는 `Key` 값으로 저장되게 되어있습니다.
+- 따라서, Access Token 재발급 API 의 파라미터 - Cookie 부분에 아래 사진과 같이 입력합니다.
+![Image](https://github.com/user-attachments/assets/c8f01c59-e1ee-4379-a2c4-e6c669e48c3c)
+- 입력란에 `Refresh-Token=Bearer <토큰값>` 형식으로 입력하면 되고, 토큰 값은 로그인시 반환받은 Refresh Token 을 참고하시면 됩니다.
+- *중요* : *잊지 않고, 새롭게 재발급 받은 Access Token 을 **Authorize 버튼에 재등록** 해주셔야 합니다.*
+
 
 ---
 
