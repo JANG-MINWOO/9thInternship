@@ -60,16 +60,10 @@ public class JwtService {
 
 		// Refresh Token 유효성 검사
 		String strippedToken = jwtUtil.substringToken(refreshToken);
-		try {
-			if (!jwtUtil.validateRefreshToken(strippedToken)) {
-				log.warn("유효하지 않은 Refresh Token");
-				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh Token");
-			}
-		} catch (ExpiredJwtException e) {
-			log.warn("만료된 Refresh Token");
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "만료된 Refresh Token, 다시 로그인하세요.");
+		if (!jwtUtil.validateRefreshToken(strippedToken)) {
+			log.warn("유효하지 않은 Refresh Token");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh Token");
 		}
-
 
 		// Refresh Token 이 유효하면 새로운 Access Token 발급
 		Claims claims = jwtUtil.extractClaims(strippedToken);
